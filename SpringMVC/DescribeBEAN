@@ -1,0 +1,57 @@
+<context:component-scan base-package="net.divine.hellocontroller" />  --> викристовується для пошуку @RequestMapping в классах даного пакета
+	<mvc:annotation-driven />	--> для використання Анотацій
+	<mvc:resources location="/WEB-INF/" mapping="/resources/**" /> --> надає доступ до image,js,css та ін. необхідних додаткових файлів
+	
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/admissionForm"/> --> вказує САМЕ на те що interceptor буде працювати саме за цим запитом -admissionForm-
+			<bean class= "net.divine.hellocontroller.DayOfWeekAccessInterceptor"/> --> необхідний для роботи з interceptors
+		</mvc:interceptor>
+		
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"> --> використовується для зміни мови відображення тексту (працює в парі)
+			<property name="paramName" value="siteLanguage"></property>
+		</bean>
+		
+		<bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor"> --> для початкового відображення теми
+			<property name="paramName" value="siteTheme"></property>
+		</bean>
+	
+	</mvc:interceptors>
+
+	<bean id="viewResolver"      --> основиний bean для відображення .jsp сторінок в браузері
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+
+	<bean id="messageSource"  --> bean для роботи з .properties файлами (посилання(label) та умовами(Past.student.DOB)) необхідний при валідації @Valid
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="/WEB-INF/studentmessages" />
+	</bean>
+	
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" /> --> використовується для зміни мови відображення тексту (працює в парі)
+	
+	<bean id="themeSource" class="org.springframework.ui.context.support.ResourceBundleThemeSource">  --> оголошення файлів із властивостями які починаються на (theme-)
+		<property name="basenamePrefix" value="theme-" />
+	</bean>
+	
+	<bean id="themeResolver" class="org.springframework.web.servlet.theme.CookieThemeResolver"> --> тема по замовчуванню (green)
+		<property name="defaultThemeName" value="green"/>
+	</bean>
+	
+	<bean id="simpleMappingExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> --> bean для відслідковування Exception's (може бути використаний замість java класа (ExceptionHandlerMethods.java))
+		<property name="exceptionMappings">
+			<map>
+				<entry key="NullPointerException" value="NullPointerException"/>
+				<entry key="IOException" value="IOException"/>
+			</map>
+		</property>
+		<!-- This is default exception -->
+		<property name="defaultErrorView" value="Exception"/>
+		<!-- Loggin -->
+		<property name="warnLogCategory" value="MVCLogger" />
+	</bean>
